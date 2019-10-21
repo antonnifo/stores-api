@@ -54,5 +54,19 @@ class Items(Resource):
         else:
              return  {'items' : None}, 404 
     
-                
+    def post(self):
+      
+        data = request.get_json()
+
+        item = get_by_name(data['name'])
+
+        if item:
+            return {'error' : 'item with the same name already exists'}
+        else:
+            conn  = sqlite3.connect('data.db')
+            cursor = conn.cursor()
+            query = "INSERT INTO items VALUES(?,?)"
+
+            cursor.execute(query, (data['name'],data['price']))
+            return data, 201                
 
