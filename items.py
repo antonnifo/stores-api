@@ -34,7 +34,7 @@ class Item(Resource):
 
         item = get_by_name(name)
         if item:
-            return item 
+            return item , 200
         return {'error' : 'item not found'}, 404
 
     def delete(self, name):
@@ -42,7 +42,7 @@ class Item(Resource):
         item = get_by_name(name)
 
         if not item:
-            return {'error' : 'item with that name does not exists'}
+            return {'error' : 'item with that name does not exists'}, 400
             
         else:
             conn  = sqlite3.connect('data.db')
@@ -52,14 +52,7 @@ class Item(Resource):
             cursor.execute(query, (name,))
             conn.commit()
             conn.close()
-            return {'message' : 'Item has been deleted'}               
-
-      
-        
-
-    def put(self,name):
-       pass
-       return item       
+            return {'message' : 'Item has been deleted'} , 200                
 
 
 class Items(Resource):
@@ -84,11 +77,13 @@ class Items(Resource):
 
         query = "SELECT * FROM items"
 
-        cursor.execute(query) 
-        
-        items = cursor.fetchall()
+        rows = cursor.execute(query) 
+        # items = cursor.fetchall()
         conn.close()
-        return items
+        items = []
+        for row in rows:
+            items.append(row)
+        return items, 200
 
     
     def post(self):
@@ -98,15 +93,39 @@ class Items(Resource):
         item = get_by_name(data['name'])
 
         if item:
-            return {'error' : 'item with the same name already exists'}
+            return {'error' : 'item with the same name already exists'}, 400
             
         else:
-            conn  = sqlite3.connect('data.db')
-            cursor = conn.cursor()
-            query = "INSERT INTO items VALUES(?,?)"
-
-            cursor.execute(query, (data['name'],data['price']))
-            conn.commit()
-            conn.close()
+            Items.insert_data(data)
             return data, 201                
 
+    @classmethod
+    def insert_data(cls, data):
+        conn  = sqlite3.connect('data.db')
+        cursor = conn.cursor()
+        query = "INSERT INTO items VALUES(?,?)"
+
+        cursor.execute(query, (data['name'],data['price']))
+        conn.commit()
+        conn.close()
+
+    def put(self):
+
+        data = Items.parser.parse_args()
+
+        item = get_by_name(data['name'])       
+
+        if item:
+            conn  = sqlite3.connect('data.db')
+            cursor = conn.cursor()
+            query = "UPDATE items SET name=?,price=? WHERE name=?"
+
+            cursor.execute(query, (data['name'],data['price'],data['name']))
+            conn.commit()
+            conn.close()
+            return {'message' : 'Item has been updated'}                     
+         
+        else:
+            
+            Items.insert_data(data)
+            return data, 201     
