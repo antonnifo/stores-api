@@ -79,11 +79,14 @@ class Items(Resource):
 
         rows = cursor.execute(query) 
         # items = cursor.fetchall()
-        conn.close()
+        
+        
         items = []
         for row in rows:
-            items.append(row)
-        return items, 200
+            items.append({'name': row[0], 'price':row[1]})
+
+        conn.close()    
+        return {'items': items}, 200
 
     
     def post(self):
