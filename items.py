@@ -38,7 +38,23 @@ class Item(Resource):
         return {'error' : 'item not found'}, 404
 
     def delete(self, name):
-      pass
+
+        item = get_by_name(name)
+
+        if not item:
+            return {'error' : 'item with that name does not exists'}
+            
+        else:
+            conn  = sqlite3.connect('data.db')
+            cursor = conn.cursor()
+            query = "DELETE FROM items WHERE name=?"
+
+            cursor.execute(query, (name,))
+            conn.commit()
+            conn.close()
+            return {'message' : 'Item has been deleted'}               
+
+      
         
 
     def put(self,name):
