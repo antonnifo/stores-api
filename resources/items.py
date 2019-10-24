@@ -3,21 +3,7 @@ from flask_jwt import JWT, jwt_required
 from flask_restful import Api, Resource, reqparse, request
 
 from security import authenticate, identity
-
-
-def get_by_name(name):
-        conn   = sqlite3.connect('data.db')
-        cursor = conn.cursor()
-
-        query = "SELECT * FROM items WHERE name=?"
-
-        results = cursor.execute(query, (name,)) 
-        
-        row = results.fetchone()
-        conn.close()
-
-        if row:
-            return {'item': {'name': row[0], 'price' :row[1]}}
+from  models.item import ItemModel
 
 class Item(Resource):
 
@@ -32,14 +18,14 @@ class Item(Resource):
     @jwt_required()
     def get(self,name):
 
-        item = get_by_name(name)
+        item = ItemModel.get_by_name(self,name)
         if item:
             return item , 200
         return {'error' : 'item not found'}, 404
 
     def delete(self, name):
 
-        item = get_by_name(name)
+        item = ItemModel.get_by_name(self,name)
 
         if not item:
             return {'error' : 'item with that name does not exists'}, 400
@@ -79,44 +65,32 @@ class Items(Resource):
 
         rows = cursor.execute(query) 
         # items = cursor.fetchall()
-        
-        
+             
         items = []
         for row in rows:
             items.append({'name': row[0], 'price':row[1]})
 
         conn.close()    
         return {'items': items}, 200
-
     
     def post(self):
       
         data = Items.parser.parse_args()
 
-        item = get_by_name(data['name'])
+        item = ItemModel.get_by_name(self,data['name'])
 
         if item:
             return {'error' : 'item with the same name already exists'}, 400
             
         else:
-            Items.insert_data(data)
+            ItemModel.insert_data(self,data)
             return data, 201                
-
-    @classmethod
-    def insert_data(cls, data):
-        conn  = sqlite3.connect('data.db')
-        cursor = conn.cursor()
-        query = "INSERT INTO items VALUES(?,?)"
-
-        cursor.execute(query, (data['name'],data['price']))
-        conn.commit()
-        conn.close()
 
     def put(self):
 
         data = Items.parser.parse_args()
 
-        item = get_by_name(data['name'])       
+        item = ItemModel.get_by_name(self,data['name'])       
 
         if item:
             conn  = sqlite3.connect('data.db')
@@ -130,5 +104,5 @@ class Items(Resource):
          
         else:
             
-            Items.insert_data(data)
-            return data, 201     
+            ItemModel.insert_data(data)
+            return data, 201 
