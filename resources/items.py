@@ -24,19 +24,13 @@ class Item(Resource):
 
     def delete(self, name):
 
-        item = ItemModel.get_by_name(self,name)
+        item = ItemModel.get_by_name(name)
 
         if not item:
-            return {'error' : 'item with that name does not exists'}, 400
+            return {"error" : "item with the name '{}' does not exists".format(name)}, 404
             
         else:
-            conn  = sqlite3.connect('data.db')
-            cursor = conn.cursor()
-            query = "DELETE FROM items WHERE name=?"
-
-            cursor.execute(query, (name,))
-            conn.commit()
-            conn.close()
+            item.delete_from_db()
             return {'message' : 'Item has been deleted'} , 200                
 
 
@@ -76,7 +70,7 @@ class Items(Resource):
       
         data = Items.parser.parse_args()
 
-        if ItemModel.get_by_name(self,data['name']):
+        if ItemModel.get_by_name(data['name']):
             return {"error" : "item with the same name '{}' already exists".format(data['name'])}, 400
              
         item = ItemModel(data['name'], data['price'])           
@@ -92,19 +86,12 @@ class Items(Resource):
 
         data = Items.parser.parse_args()
 
-        item = ItemModel.get_by_name(self,data['name'])       
+        item = ItemModel.get_by_name(data['name'])       
 
-        if item:
-            conn  = sqlite3.connect('data.db')
-            cursor = conn.cursor()
-            query = "UPDATE items SET name=?,price=? WHERE name=?"
-
-            cursor.execute(query, (data['name'],data['price'],data['name']))
-            conn.commit()
-            conn.close()
-            return {'message' : 'Item has been updated'}                     
-         
+        if item is None:
+            item = ItemModel(data['name'], data['price'])
         else:
-            
-            ItemModel.insert_data(data)
-            return data, 201 
+            item.name  = data['name']
+            item.price = data['price']
+
+        return item.json()
