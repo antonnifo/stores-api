@@ -1,4 +1,3 @@
-import sqlite3
 from flask_jwt import JWT, jwt_required
 from flask_restful import Api, Resource, reqparse, request
 
@@ -20,7 +19,7 @@ class Item(Resource):
 
         item = ItemModel.get_by_name(self,name)
         if item:
-            return item , 200
+            return item.json() , 200
         return {'error' : 'item not found'}, 404
 
     def delete(self, name):
@@ -77,14 +76,17 @@ class Items(Resource):
       
         data = Items.parser.parse_args()
 
-        item = ItemModel.get_by_name(self,data['name'])
+        if ItemModel.get_by_name(self,data['name']):
+            return {"error" : "item with the same name '{}' already exists".format(data['name'])}, 400
+             
+        item = ItemModel(data['name'], data['price'])           
+        
+        try:
+            item.save_to_db()
+        except:
+            return {'error':'something weired happened while inserting data to db'}, 500
 
-        if item:
-            return {'error' : 'item with the same name already exists'}, 400
-            
-        else:
-            ItemModel.insert_data(self,data)
-            return data, 201                
+        return item.json(), 201                        
 
     def put(self):
 
