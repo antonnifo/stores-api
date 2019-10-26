@@ -8,8 +8,9 @@ from resources.items import Item,Items
 
 # created an object of flask using a unique name
 app = Flask(__name__)
-app.config['PROPAGATE_EXCEPTIONS'] = True # To allow flask propagating exception even if debug is set to false on app
-app.secret_key = 'jos'
+app.config['PROPAGATE_EXCEPTIONS']          = True # To allow flask propagating exception even if debug is set to false on app
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = 'minkowski'
 api = Api(app)
 
 jwt = JWT(app, authenticate, identity)
@@ -21,4 +22,6 @@ api.add_resource(Item ,'/items/<string:name>')
 api.add_resource(UserRegister, '/register')        
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    from db_config import db #To prevent circular import
+    db.init_app(app)
+    app.run()
