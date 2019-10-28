@@ -5,14 +5,6 @@ from security import authenticate, identity
 from  models.item import ItemModel
 
 class Item(Resource):
-
-    parser = reqparse.RequestParser()
-    parser.add_argument('price',
-    type=float,
-    required=True,
-    help="This field cannot be left blank!"
-        )
-
     
     @jwt_required()
     def get(self,name):
@@ -50,6 +42,12 @@ class Items(Resource):
     help="This field cannot be left blank!"
         )
 
+    parser.add_argument('store_id',
+    type=int,
+    required=True,
+    help="Every Item requires a store id"
+        )        
+
     def get(self):
         # return {'items': list(map(lambda x : x.json(), ItemModel.query.all()))}
         return {'items' : [x.json() for x in ItemModel.query.all()]}
@@ -61,7 +59,8 @@ class Items(Resource):
         if ItemModel.get_by_name(data['name']):
             return {"error" : "item with the same name '{}' already exists".format(data['name'])}, 400
              
-        item = ItemModel(data['name'], data['price'])           
+        # item = ItemModel(data['name'], data['price'],data['store_id'])           
+        item = ItemModel(**data)           
         
         try:
             item.save_to_db()
@@ -77,9 +76,10 @@ class Items(Resource):
         item = ItemModel.get_by_name(data['name'])       
 
         if item is None:
-            item = ItemModel(data['name'], data['price'])
+            item = ItemModel(**data)
         else:
-            item.name  = data['name']
-            item.price = data['price']
+            item.name     = data['name']
+            item.price    = data['price']
+            item.store_id = data['store_id']
 
         return item.json()
