@@ -16,6 +16,11 @@ api = Api(app)
 
 jwt = JWT(app, authenticate, identity)
 
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
+
 
 
 api.add_resource(Items ,'/items')        
@@ -25,4 +30,4 @@ api.add_resource(UserRegister, '/register')
 if __name__ == '__main__':
     from db_config import db #To prevent circular import
     db.init_app(app)
-    app.run()
+    app.run(debug=True)
