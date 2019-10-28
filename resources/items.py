@@ -51,21 +51,9 @@ class Items(Resource):
         )
 
     def get(self):
-        conn   = sqlite3.connect('data.db')
-        cursor = conn.cursor()
-
-        query = "SELECT * FROM items"
-
-        rows = cursor.execute(query) 
-        # items = cursor.fetchall()
-             
-        items = []
-        for row in rows:
-            items.append({'name': row[0], 'price':row[1]})
-
-        conn.close()    
-        return {'items': items}, 200
-    
+        # return {'items': list(map(lambda x : x.json(), ItemModel.query.all()))}
+        return {'items' : [x.json() for x in ItemModel.query.all()]}
+        
     def post(self):
       
         data = Items.parser.parse_args()
