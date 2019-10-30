@@ -3,8 +3,9 @@ from flask_jwt import JWT
 from flask_restful import Api
 
 from security import authenticate, identity
-from resources.users import UserRegister
-from resources.items import Item,Items
+from resources.users  import UserRegister
+from resources.items  import Item,Items
+from resources.stores import Store, Stores
 
 # created an object of flask using a unique name
 app = Flask(__name__)
@@ -21,10 +22,10 @@ def create_tables():
     db.create_all()
 
 
-
-
 api.add_resource(Items ,'/items')        
 api.add_resource(Item ,'/items/<string:name>')
+api.add_resource(Stores, '/stores')
+api.add_resource(Store, '/stores/<string:name>')
 api.add_resource(UserRegister, '/register')        
 
 if __name__ == '__main__':
