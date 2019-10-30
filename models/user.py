@@ -3,7 +3,7 @@ from db_config import db
 class UserModel(db.Model):
     __tablename__ = 'users'
 
-    id_ = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20))
     password = db.Column(db.String(20))
 
@@ -21,4 +21,4 @@ class UserModel(db.Model):
 
     @classmethod
     def find_by_id(cls, id_):
-        return cls.query.filter_by(id_= id_).first() 
+        return cls.query.filter_by(id= id).first() 
