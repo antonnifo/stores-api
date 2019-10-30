@@ -7,9 +7,9 @@ class StoreModel(db.Model):
     name  = db.Column(db.String(20))
     
     # back reference
-    items = db.relationship('Itemmodel', lazy = 'dynamic')
+    items = db.relationship('ItemModel', lazy = 'dynamic')
 
-    def __init__(self,name,price):
+    def __init__(self,name):
         self.name  = name
 
     def json(self):
