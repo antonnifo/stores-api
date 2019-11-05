@@ -11,8 +11,8 @@ from resources.stores import Store, Stores
 
 # created an object of flask using a unique name
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']       = os.environ.get(DATABASE_URL, 'sqlite:///data.db')
-app.config['PROPAGATE_EXCEPTIONS']          = True # To allow flask propagating exception even if debug is set to false on app
+app.config['SQLALCHEMY_DATABASE_URI']       = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
+app.config['PROPAGATE_EXCEPTIONS']          = True # To allow flask to propagate exception even if debug is set to false on app
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'minkowski'
 api = Api(app)
