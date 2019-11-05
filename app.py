@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_jwt import JWT
 from flask_restful import Api
@@ -9,7 +11,7 @@ from resources.stores import Store, Stores
 
 # created an object of flask using a unique name
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']       = 'sqlite:///data.db'
+app.config['SQLALCHEMY_DATABASE_URI']       = os.environ.get(DATABASE_URL, 'sqlite:///data.db')
 app.config['PROPAGATE_EXCEPTIONS']          = True # To allow flask propagating exception even if debug is set to false on app
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'minkowski'
