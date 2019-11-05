@@ -1,4 +1,4 @@
-# flask-api [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)  
+# Storez [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)  
 ### Tech/framework used  
 python 3.6.7 and [Flask](http://flask.pocoo.org/docs/dev/) 
 ## Installation and Deployment. 
